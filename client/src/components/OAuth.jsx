@@ -1,7 +1,6 @@
 import { Button } from "flowbite-react";
 import { AiFillGoogleCircle } from "react-icons/ai";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
-import React from "react";
 import { app } from "../firebase";
 import { signInSuccess } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
@@ -27,7 +26,7 @@ export default function OAuth() {
           googlePhotoUrl: resultsFromGoogle.user.photoURL,
         }),
       });
-      const data = await res.json;
+      const data = await res.json();
       if (res.ok) {
         dispatch(signInSuccess(data));
         navigate("/");
