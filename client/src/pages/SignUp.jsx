@@ -48,7 +48,7 @@ export default function SignUp() {
         <div className="flex-1">
           <Link to={"/"} className=" font:bold dark:text-white text-4xl">
             <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
-              Anshul's
+              Devs
             </span>
             Blog
           </Link>
@@ -62,7 +62,7 @@ export default function SignUp() {
         <div className="flex-1">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
-              <Label value="Your username" />
+              <Label value="Username" />
               <TextInput
                 type="text"
                 placeholder="Username"
@@ -71,7 +71,7 @@ export default function SignUp() {
               />
             </div>
             <div>
-              <Label value="Your email" />
+              <Label value="Email" />
               <TextInput
                 type="email"
                 placeholder="name@company.com"
@@ -80,7 +80,7 @@ export default function SignUp() {
               />
             </div>
             <div>
-              <Label value="Your password" />
+              <Label value="Password" />
               <TextInput
                 type="password"
                 placeholder="Password"
