@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import { useDispatch, useSelector } from "react-redux";
-import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice";
+import { signInStart, signInSuccess, signInFailure, resetError } from "../redux/user/userSlice";
 import OAuth from "../components/OAuth";
 
 export default function SignIn() {
@@ -10,6 +10,10 @@ export default function SignIn() {
   const {loading, error: errorMessage} = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(resetError());
+  }, [dispatch]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -104,7 +108,7 @@ export default function SignIn() {
             </Link>
           </div>
           {errorMessage && (
-            <Alert classname="mt-5" color="failure">
+            <Alert className="mt-5" color="failure">
               {errorMessage}
             </Alert>
           )}
