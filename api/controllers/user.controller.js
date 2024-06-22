@@ -23,9 +23,9 @@ export const updateUser = async (req, res, next) => {
     req.body.password = bcryptjs.hashSync(req.body.password, 10);
   }
   if (req.body.username) {
-    if (req.body.username.length < 7 || req.body.username.length > 20) {
+    if (req.body.username.length < 6 || req.body.username.length > 20) {
       return next(
-        errorHandler(400, "Username must be between 7 and 20 characters long")
+        errorHandler(400, "Username must be between 6 and 20 characters long")
       );
     }
     if (req.body.username.includes(" ")) {
@@ -55,6 +55,20 @@ export const updateUser = async (req, res, next) => {
     );
     const { password, ...rest } = updatedUser._doc;
     res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req, res, next) => {
+  if (req.user.id !== req.params.userId) {
+    return next(
+      errorHandler(403, "You are not authorized to update this user")
+    );
+  }
+  try {
+    await User.findByIdAndDelete(req.params.userId);
+    res.status(200).json({ message: "User has been deleted" });
   } catch (error) {
     next(error);
   }
