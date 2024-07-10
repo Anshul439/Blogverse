@@ -9,3 +9,27 @@ body {
 .ql-editor {
     font-size: 1.05rem;
 }
+
+.dark .ql-container.ql-snow .ql-editor {
+    color: #ffffff; /* White text in editor */
+  }
+  .dark .ql-snow .ql-picker.ql-expanded .ql-picker-options {
+    background-color: #333333; /* Dark background for dropdown */
+    color: #ffffff; /* White text for dropdown options */
+  }
+  .dark .ql-snow .ql-picker-label {
+    color: #ffffff; /* White text for label */
+  }
+  .dark .ql-snow .ql-stroke {
+    stroke: #ffffff; /* White stroke for icons */
+  }
+  .dark .ql-snow .ql-fill {
+    fill: #ffffff; /* White fill for icons */
+  }
+  .dark .ql-snow .ql-picker-options {
+    border-color: #333333; /* Dark border for dropdown options */
+  }
+  .dark .ql-editor.ql-blank::before {
+    color: #cccccc; /* Light color for placeholder text */
+  }
+  
