@@ -7,5 +7,5 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [flowbite, scrollbar],
+  plugins: [flowbite.plugin(), scrollbar],
 };

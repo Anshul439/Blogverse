@@ -5,7 +5,7 @@ import CreatePost from "../pages/CreatePost";
 export const OnlyAdminPrivateRoute = () => {
   const { currentUser } = useSelector((state) => state.user);
   return currentUser && currentUser.isAdmin ? (
-    <CreatePost />
+    <Outlet />
   ) : (
     <Navigate to="/sign-in" />
   );
