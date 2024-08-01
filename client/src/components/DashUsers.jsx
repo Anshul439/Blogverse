@@ -10,6 +10,8 @@ export const DashUsers = () => {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState('');
+  const [loading, setLoading] = useState(true); // Added loading state
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -23,6 +25,8 @@ export const DashUsers = () => {
         }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false); // Set loading to false when fetching is complete
       }
     };
     if (currentUser.isAdmin) {
@@ -48,82 +52,86 @@ export const DashUsers = () => {
 
   const handleDeleteUser = async () => {
     try {
-        const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
-            method: 'DELETE',
-        });
-        const data = await res.json();
-        if (res.ok) {
-            setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
-            setShowModal(false);
-        } else {
-            console.log(data.message);
-        }
+      const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
+        setShowModal(false);
+      } else {
+        console.log(data.message);
+      }
     } catch (error) {
-        console.log(error.message);
+      console.log(error.message);
     }
   };
 
   return (
-    <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
-      {currentUser.isAdmin && users.length > 0 ? (
-        <>
-          <Table hoverable className='shadow-md'>
-            <Table.Head>
-              <Table.HeadCell>Date created</Table.HeadCell>
-              <Table.HeadCell>User image</Table.HeadCell>
-              <Table.HeadCell>Username</Table.HeadCell>
-              <Table.HeadCell>Email</Table.HeadCell>
-              <Table.HeadCell>Admin</Table.HeadCell>
-              <Table.HeadCell>Delete</Table.HeadCell>
-            </Table.Head>
-            {users.map((user) => (
-              <Table.Body className='divide-y' key={user._id}>
-                <Table.Row className='bg-white dark:border-gray-700 dark:bg-gray-800'>
-                  <Table.Cell>
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <img
-                      src={user.profilePicture}
-                      alt={user.username}
-                      className='w-10 h-10 object-cover bg-gray-500 rounded-full'
-                    />
-                  </Table.Cell>
-                  <Table.Cell>{user.username}</Table.Cell>
-                  <Table.Cell>{user.email}</Table.Cell>
-                  <Table.Cell>
-                    {user.isAdmin ? (
-                      <FaCheck className='text-green-500' />
-                    ) : (
-                      <FaTimes className='text-red-500' />
-                    )}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <span
-                      onClick={() => {
-                        setShowModal(true);
-                        setUserIdToDelete(user._id);
-                      }}
-                      className='font-medium text-red-500 hover:underline cursor-pointer'
-                    >
-                      Delete
-                    </span>
-                  </Table.Cell>
-                </Table.Row>
-              </Table.Body>
-            ))}
-          </Table>
-          {showMore && (
-            <button
-              onClick={handleShowMore}
-              className='w-full text-teal-500 self-center text-sm py-7'
-            >
-              Show more
-            </button>
+    <div className='overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
+      <Table hoverable className='shadow-md w-full' style={{ tableLayout: 'fixed' }}>
+        <Table.Head>
+          <Table.HeadCell className='text-center'>Date created</Table.HeadCell>
+          <Table.HeadCell className='text-center'>User image</Table.HeadCell>
+          <Table.HeadCell className='text-center'>Username</Table.HeadCell>
+          <Table.HeadCell className='text-center'>Email</Table.HeadCell>
+          <Table.HeadCell className='text-center'>Admin</Table.HeadCell>
+          <Table.HeadCell className='text-center'>Delete</Table.HeadCell>
+        </Table.Head>
+        <Table.Body className='divide-y'>
+          {loading ? (
+            <Table.Row>
+              <Table.Cell colSpan="6" className="text-center py-4">
+                <p className='text-gray-500 dark:text-gray-400'>Loading...</p>
+              </Table.Cell>
+            </Table.Row>
+          ) : users.length > 0 ? (
+            users.map((user) => (
+              <Table.Row key={user._id} className='bg-white dark:border-gray-700 dark:bg-gray-800'>
+                <Table.Cell className='text-center'>{new Date(user.createdAt).toLocaleDateString()}</Table.Cell>
+                <Table.Cell className='text-center'>
+                  <img
+                    src={user.profilePicture}
+                    alt={user.username}
+                    className='w-10 h-10 object-cover bg-gray-500 rounded-full mx-auto'
+                  />
+                </Table.Cell>
+                <Table.Cell className='text-center'>{user.username}</Table.Cell>
+                <Table.Cell className='text-center'>{user.email}</Table.Cell>
+                <Table.Cell className='text-center'>
+                  {user.isAdmin ? (
+                    <FaCheck className='text-green-500 mx-auto' />
+                  ) : (
+                    <FaTimes className='text-red-500 mx-auto' />
+                  )}
+                </Table.Cell>
+                <Table.Cell className='text-center'>
+                  <span
+                    onClick={() => {
+                      setShowModal(true);
+                      setUserIdToDelete(user._id);
+                    }}
+                    className='font-medium text-red-500 hover:underline cursor-pointer'
+                  >
+                    Delete
+                  </span>
+                </Table.Cell>
+              </Table.Row>
+            ))
+          ) : (
+            <Table.Row>
+              <Table.Cell colSpan="6" className="text-center py-4">No users available</Table.Cell>
+            </Table.Row>
           )}
-        </>
-      ) : (
-        <p>You have no users yet!</p>
+        </Table.Body>
+      </Table>
+      {showMore && !loading && (
+        <button
+          onClick={handleShowMore}
+          className='w-full text-teal-500 self-center text-sm py-7'
+        >
+          Show more
+        </button>
       )}
       <Modal
         show={showModal}
@@ -151,4 +159,4 @@ export const DashUsers = () => {
       </Modal>
     </div>
   );
-}
+};
