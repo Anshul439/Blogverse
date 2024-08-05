@@ -1,6 +1,7 @@
 import { Button, Spinner } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import CommentSection from "../components/CommentSection";
 
 export default function PostPage() {
   const { postSlug } = useParams();
@@ -15,15 +16,13 @@ export default function PostPage() {
         const res = await fetch(`/api/post/getposts?slug=${postSlug}`);
         const data = await res.json();
         if (!res.ok) {
-          setError(null);
+          setError(true);
           setLoading(false);
           return;
         }
-        if (res.ok) {
-          setPost(data.posts[0]);
-          setLoading(false);
-          setError(null);
-        }
+        setPost(data.posts[0]);
+        setError(false);
+        setLoading(false);
       } catch (error) {
         setError(true);
         setLoading(false);
@@ -32,10 +31,21 @@ export default function PostPage() {
     fetchPost();
   }, [postSlug]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [postSlug]);
+
   if (loading)
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Spinner size="xl" />
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>Error loading post.</p>
       </div>
     );
 
@@ -60,13 +70,14 @@ export default function PostPage() {
       <div className="flex justify-between p-3 border-b border-slate-500 mx-auto w-full max-w-3xl text-xs">
         <span>{post && new Date(post.createdAt).toLocaleDateString()}</span>
         <span className="italic">
-          {post && (post.content.length / 1000).toFixed(0)} mins read
+          {post && (post.content.length / 1500).toFixed(0)} mins read
         </span>
       </div>
       <div
         className="p-3 max-w-3xl mx-auto w-full post-content"
         dangerouslySetInnerHTML={{ __html: post && post.content }}
       ></div>
+      <CommentSection postId={post._id} />
     </main>
   );
 }

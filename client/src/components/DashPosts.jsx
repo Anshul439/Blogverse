@@ -43,7 +43,7 @@ export const DashPosts = () => {
       const data = await res.json();
       if (res.ok) {
         setUserPosts((prev) => [...prev, ...data.posts]);
-        if (data.posts.length < 9) {
+        if (data.posts.length <= 9) {
           setShowMore(false);
         }
       }
@@ -73,27 +73,32 @@ export const DashPosts = () => {
       console.log(error.message);
     }
   };
-
   return (
     <div className='overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
-      <Table hoverable className='shadow-md w-full' style={{ tableLayout: 'fixed' }}>
-        <Table.Head>
-          <Table.HeadCell className='text-center'>Date updated</Table.HeadCell>
-          <Table.HeadCell className='text-center'>Post image</Table.HeadCell>
-          <Table.HeadCell className='text-center'>Post title</Table.HeadCell>
-          <Table.HeadCell className='text-center'>Category</Table.HeadCell>
-          <Table.HeadCell className='text-center'>Delete</Table.HeadCell>
-          <Table.HeadCell className='text-center'>Edit</Table.HeadCell>
-        </Table.Head>
-        <Table.Body className='divide-y'>
-          {loading ? (
-            <Table.Row>
-              <Table.Cell colSpan="6" className="text-center py-4">
-                <p className='text-gray-500 dark:text-gray-400'>Loading...</p> {/* Adjusted loading text */}
-              </Table.Cell>
-            </Table.Row>
-          ) : userPosts.length > 0 ? (
-            userPosts.map((post) => (
+  {loading ? (
+    <Table hoverable className='shadow-md w-full' style={{ tableLayout: 'fixed' }}>
+      <Table.Body>
+        <Table.Row>
+          <Table.Cell colSpan="6" className="text-center py-4">
+            <p className='text-gray-500 dark:text-gray-400'>Loading...</p> {/* Adjusted loading text */}
+          </Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table>
+  ) : (
+    <>
+      {userPosts.length > 0 ? (
+        <Table hoverable className='shadow-md w-full' style={{ tableLayout: 'fixed' }}>
+          <Table.Head>
+            <Table.HeadCell className='text-center'>Date updated</Table.HeadCell>
+            <Table.HeadCell className='text-center'>Post image</Table.HeadCell>
+            <Table.HeadCell className='text-center'>Post title</Table.HeadCell>
+            <Table.HeadCell className='text-center'>Category</Table.HeadCell>
+            <Table.HeadCell className='text-center'>Delete</Table.HeadCell>
+            <Table.HeadCell className='text-center'>Edit</Table.HeadCell>
+          </Table.Head>
+          <Table.Body className='divide-y'>
+            {userPosts.map((post) => (
               <Table.Row key={post._id} className='bg-white dark:border-gray-700 dark:bg-gray-800'>
                 <Table.Cell className='text-center'>{new Date(post.updatedAt).toLocaleDateString()}</Table.Cell>
                 <Table.Cell className='text-center'>
@@ -134,46 +139,55 @@ export const DashPosts = () => {
                   </Link>
                 </Table.Cell>
               </Table.Row>
-            ))
-          ) : (
+            ))}
+          </Table.Body>
+        </Table>
+      ) : (
+        <Table hoverable className='shadow-md w-full' style={{ tableLayout: 'fixed' }}>
+          <Table.Body>
             <Table.Row>
               <Table.Cell colSpan="6" className="text-center py-4">No posts available</Table.Cell>
             </Table.Row>
-          )}
-        </Table.Body>
-      </Table>
-      {showMore && !loading && (
-        <button
-          onClick={handleShowMore}
-          className='w-full text-teal-500 self-center text-sm py-7'
-        >
-          Show more
-        </button>
+          </Table.Body>
+        </Table>
       )}
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        popup
-        size='md'
-      >
-        <Modal.Header />
-        <Modal.Body>
-          <div className='text-center'>
-            <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
-            <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>
-              Are you sure you want to delete this post?
-            </h3>
-            <div className='flex justify-center gap-4'>
-              <Button color='failure' onClick={handleDeletePost}>
-                Yes, I'm sure
-              </Button>
-              <Button color='gray' onClick={() => setShowModal(false)}>
-                No, cancel
-              </Button>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
-    </div>
+    </>
+  )}
+
+  {showMore && !loading && (
+    <button
+      onClick={handleShowMore}
+      className='w-full text-teal-500 self-center text-sm py-7'
+    >
+      Show more
+    </button>
+  )}
+
+  <Modal
+    show={showModal}
+    onClose={() => setShowModal(false)}
+    popup
+    size='md'
+  >
+    <Modal.Header />
+    <Modal.Body>
+      <div className='text-center'>
+        <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
+        <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>
+          Are you sure you want to delete this post?
+        </h3>
+        <div className='flex justify-center gap-4'>
+          <Button color='failure' onClick={handleDeletePost}>
+            Yes, I'm sure
+          </Button>
+          <Button color='gray' onClick={() => setShowModal(false)}>
+            No, cancel
+          </Button>
+        </div>
+      </div>
+    </Modal.Body>
+  </Modal>
+</div>
+
   );
 };
