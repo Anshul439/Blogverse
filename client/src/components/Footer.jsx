@@ -36,9 +36,7 @@ export default function FooterCom() {
                   GitHub
                 </Footer.Link>
                 <Footer.Link
-                  href="/about"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#"
                 >
                   Blogverse
                 </Footer.Link>
@@ -48,7 +46,7 @@ export default function FooterCom() {
               <Footer.Title title="Follow Me" />
               <Footer.LinkGroup col>
                 <Footer.Link
-                  href="https://linkedin.com/anshul-wadhwa"
+                  href="https://www.linkedin.com/in/anshul-wadhwa"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
