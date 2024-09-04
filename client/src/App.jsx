@@ -26,11 +26,9 @@ export default function App() {
         <Route path="/search" element={<Search />} />
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/update-post/:postId" element={<UpdatePost />} />
         </Route>
-
-        <Route path="/create-post" element={<CreatePost />} />
-        <Route path="/update-post/:postId" element={<UpdatePost />} />
-
         <Route path="/post/:postSlug" element={<PostPage />} />
       </Routes>
       <Footer />

@@ -4,5 +4,5 @@ import Dashboard from "../pages/Dashboard";
 
 export const PrivateRoute = () => {
   const { currentUser } = useSelector((state) => state.user);
-  return currentUser ? <Dashboard/> : <Navigate to="/sign-in" />;
+  return currentUser ? <Outlet/> : <Navigate to="/sign-in" />;
 };
