@@ -70,15 +70,16 @@ export default function PostPage() {
           {post && post.category}
         </Button>
       </Link>
-      <img
+      <div className="flex justify-center">
+      <img 
         src={post && post.image}
         alt={post && post.title}
-        className='mt-10 p-3 max-h-[600px] w-full object-cover'
-      />
+        className='mt-10 p-3 max-h-[400px] w-fit object-cover'
+      /></div>
       <div className='flex justify-between p-3 border-b border-slate-500 mx-auto w-full max-w-2xl text-xs'>
         <span>{post && new Date(post.createdAt).toLocaleDateString()}</span>
         <span className='italic'>
-          {post && (post.content.length / 1000).toFixed(0)} mins read
+          {post && (post.content.length / 1500).toFixed(0)} mins read
         </span>
       </div>
       <div
