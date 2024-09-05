@@ -20,16 +20,16 @@ export default function App() {
       <ScrollToTop />
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/search" element={<Search />} />
         <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/update-post/:postId" element={<UpdatePost />} />
+          <Route path="/post/:postSlug" element={<PostPage />} />
         </Route>
-        <Route path="/post/:postSlug" element={<PostPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>
