@@ -68,8 +68,8 @@ export const DashUsers = () => {
   };
 
   return (
-    <div className='overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
-      <Table hoverable className='shadow-md w-full' style={{ tableLayout: 'fixed' }}>
+    <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
+      <Table hoverable className='shadow-md w-full'>
         <Table.Head>
           <Table.HeadCell className='text-center'>Date created</Table.HeadCell>
           <Table.HeadCell className='text-center'>User image</Table.HeadCell>
