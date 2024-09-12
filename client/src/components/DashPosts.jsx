@@ -29,9 +29,8 @@ export const DashPosts = () => {
         setLoading(false);
       }
     };
-    if (currentUser.isAdmin) {
       fetchPosts();
-    }
+    
   }, [currentUser._id]);
 
   const handleShowMore = async () => {
