@@ -18,12 +18,10 @@ export const signup = catchAsync(async (req, res, next) => {
     next(errorHandler(400, "All fields are required"));
   }
 
-  const hashedPassword = bcryptjs.hashSync(password, 10);
-
   const newUser = new User({
     username,
     email,
-    password: hashedPassword,
+    password: password,
   });
 
   await newUser.save();
@@ -78,13 +76,13 @@ export const google = catchAsync(async (req, res, next) => {
     const generatePassword =
       Math.random().toString(36).slice(-8) +
       Math.random().toString(36).slice(-8);
-    const hashedPassword = bcryptjs.hashSync(generatePassword, 10);
+
     const newUser = new User({
       username:
         name.toLowerCase().split(" ").join("") +
         Math.random().toString(9).slice(-4),
       email,
-      password: hashedPassword,
+      password: generatePassword,
       profilePicture: googlePhotoUrl,
     });
     await newUser.save();
