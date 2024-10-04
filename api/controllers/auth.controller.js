@@ -4,6 +4,10 @@ import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 import { catchAsync } from "../utils/catchAsync.js";
 
+const signToken = (id, isAdmin) => {
+  return jwt.sign({ id, isAdmin }, process.env.JWT_SECRET);
+};
+
 export const signup = catchAsync(async (req, res, next) => {
   const { username, email, password } = req.body;
 
@@ -43,10 +47,7 @@ export const signin = catchAsync(async (req, res, next) => {
   // if (!validPassword) {
   //   return next(errorHandler(400, "Invalid credentials"));
   // }
-  const token = jwt.sign(
-    { id: validUser._id, isAdmin: validUser.isAdmin },
-    process.env.JWT_SECRET
-  );
+  const token = signToken(validUser._id, validUser.isAdmin);
 
   const { password: pass, ...userData } = validUser._doc;
 
@@ -63,10 +64,8 @@ export const google = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email });
   if (user) {
-    const token = jwt.sign(
-      { id: user._id, isAdmin: user.isAdmin },
-      process.env.JWT_SECRET
-    );
+    const token = signToken(user._id, user.isAdmin);
+
     const { password, ...rest } = user._doc;
     res
       .status(200)
@@ -86,10 +85,7 @@ export const google = catchAsync(async (req, res, next) => {
       profilePicture: googlePhotoUrl,
     });
     await newUser.save();
-    const token = jwt.sign(
-      { id: newUser._id, isAdmin: newUser.isAdmin },
-      process.env.JWT_SECRET
-    );
+    const token = signToken(newUser._id, newUser.isAdmin);
     const { password, ...rest } = newUser._doc;
     res
       .status(200)
