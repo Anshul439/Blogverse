@@ -33,14 +33,17 @@ export const signup = catchAsync(async (req, res, next) => {
 });
 
 export const signin = catchAsync(async (req, res, next) => {
-  const { email, username } = req.body;
+  const { email, password } = req.body;
 
-  if (email === "" || username === "") {
+  if (email === "" || password === "") {
     next(errorHandler(400, "All fields are required"));
   }
 
   const validUser = await User.findOne({ email });
-  if (!validUser) {
+  if (
+    !validUser ||
+    !(await validUser.correctPassword(password, validUser.password))
+  ) {
     return next(errorHandler(400, "Invalid credentials"));
   }
   // const validPassword = bcryptjs.compareSync(password, validUser.password);
