@@ -1,4 +1,3 @@
-import { MdErrorOutline } from "react-icons/md"; // Import the sad cry icon
 import { useSelector } from "react-redux"; // Import useSelector from Redux
 import { Link } from "react-router-dom"; // Import Link for navigation
 
@@ -21,7 +20,6 @@ const PageNotFound = () => {
 
       {/* Main Content */}
       <div className="relative z-10 flex flex-col justify-center items-center text-center">
-        <MdErrorOutline className="text-6xl mb-4 animate-bounce" />
         <h1 className="text-8xl font-extrabold animate-pulse">404</h1>
         <h2 className="text-3xl font-semibold mt-4">Oops! Page Not Found</h2>
         <p className="mt-2 text-lg">
