@@ -39,6 +39,10 @@ export const getposts = catchAsync(async (req, res, next) => {
       ],
     }),
   })
+    .populate({
+      path: 'userId',
+      select: 'username'
+    })
     .sort({ updatedAt: sortDirection })
     .skip(startIndex)
     .limit(limit);
@@ -63,6 +67,7 @@ export const getposts = catchAsync(async (req, res, next) => {
     lastMonthPosts,
   });
 });
+
 
 export const deletePost = catchAsync(async (req, res, next) => {
   if (req.user.isAdmin || req.user.id !== req.params.userId) {

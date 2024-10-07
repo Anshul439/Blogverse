@@ -21,7 +21,7 @@ export default function App() {
       <ScrollToTop />
       <Header />
       <Routes>
-      <Route path="*" element={<PageNotFound />} />
+        <Route path="*" element={<PageNotFound />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route element={<PrivateRoute />}>
@@ -31,7 +31,7 @@ export default function App() {
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/update-post/:postId" element={<UpdatePost />} />
           <Route path="/post/:postSlug" element={<PostPage />} />
-          
+
         </Route>
       </Routes>
       <Footer />
