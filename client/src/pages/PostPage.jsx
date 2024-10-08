@@ -62,6 +62,9 @@ export default function PostPage() {
       <h1 className='text-3xl mt-10 p-3 text-center font-serif max-w-2xl mx-auto lg:text-4xl'>
         {post && post.title}
       </h1>
+      <p className='text-center text-lg italic text-gray-600'>
+        {post && `~ ${post.userId.username}`}
+      </p>
       <Link
         to={`/search?category=${post && post.category}`}
         className='self-center mt-5'
@@ -71,11 +74,11 @@ export default function PostPage() {
         </Button>
       </Link>
       <div className="flex justify-center">
-      <img 
-        src={post && post.image}
-        alt={post && post.title}
-        className='mt-10 p-3 max-h-[400px] w-fit object-cover'
-      /></div>
+        <img
+          src={post && post.image}
+          alt={post && post.title}
+          className='mt-10 p-3 max-h-[400px] w-fit object-cover'
+        /></div>
       <div className='flex justify-between p-3 border-b border-slate-500 mx-auto w-full max-w-2xl text-xs'>
         <span>{post && new Date(post.createdAt).toLocaleDateString()}</span>
         <span className='italic'>
