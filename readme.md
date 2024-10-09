@@ -11,6 +11,7 @@ Blogverse is built using the following technologies:
 - Additional Tools: Docker for containerization
 
 Key features include user authentication, CRUD operations for blog posts, rich text editing, responsive design, and an admin dashboard for content moderation.
+Firebase is being used to host the application. Modify the /src/firebase.js accordingly.
 
 ## Running the Application
 
