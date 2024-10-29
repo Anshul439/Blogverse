@@ -70,28 +70,34 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
           <>
             <Textarea
               className='mb-2'
+              maxLength="200"
               value={editedContent}
               onChange={(e) => setEditedContent(e.target.value)}
             />
-            <div className='flex justify-end gap-2 text-xs'>
-              <Button
-                type='button'
-                size='sm'
-                gradientDuoTone='purpleToBlue'
-                onClick={handleSave}
-                disabled={!editedContent}
-              >
-                Save
-              </Button>
-              <Button
-                type='button'
-                size='sm'
-                gradientDuoTone='purpleToBlue'
-                outline
-                onClick={() => setIsEditing(false)}
-              >
-                Cancel
-              </Button>
+            <div className='flex justify-between text-xs items-center'>
+              <p className="text-gray-500 text-xs">
+                {200 - editedContent.length} characters remaining
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  type='button'
+                  size='sm'
+                  gradientDuoTone='purpleToBlue'
+                  onClick={handleSave}
+                  disabled={!editedContent}
+                >
+                  Save
+                </Button>
+                <Button
+                  type='button'
+                  size='sm'
+                  gradientDuoTone='purpleToBlue'
+                  outline
+                  onClick={() => setIsEditing(false)}
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           </>
         ) : (
