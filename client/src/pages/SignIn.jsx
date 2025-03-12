@@ -18,14 +18,19 @@ export default function SignIn() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
       return dispatch(signInFailure("All fields are required"));
-      // dispatch(signInFailure("All fields are required"));    (both work fine)
     }
+
+    if (formData.password.length < 8) {
+      return dispatch(signInFailure("Password must be at least 8 characters long"));
+    }
+
     try {
-      dispatch(signInStart())
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -36,9 +41,8 @@ export default function SignIn() {
       const data = await res.json();
       if (data.success === false) {
         return dispatch(signInFailure(data.message));
-        // dispatch(signInFailure(data.message));    (both work fine)
       }
-      if(res.ok) {
+      if (res.ok) {
         dispatch(signInSuccess(data));
         navigate("/");
       }

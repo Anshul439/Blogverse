@@ -26,9 +26,17 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.username || !formData.email || !formData.password) {
+    const { username, email, password } = formData;
+
+    if (!username || !email || !password) {
       return dispatch(signInFailure("All fields are required"));
     }
+
+    // Check password length
+    if (password.length < 8) {
+      return dispatch(signInFailure("Password must be at least 8 characters long"));
+    }
+
     try {
       dispatch(signInStart());
       const res = await fetch("/api/auth/signup", {
@@ -48,6 +56,7 @@ export default function SignUp() {
       dispatch(signInFailure(error.message));
     }
   };
+
   return (
     <div className="min-h-screen mt-20">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
@@ -89,7 +98,7 @@ export default function SignUp() {
               <Label value="Your password" />
               <TextInput
                 type="password"
-                placeholder="Password"
+                placeholder="Password (min. 8 characters)"
                 id="password"
                 onChange={handleChange}
               />
