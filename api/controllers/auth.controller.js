@@ -22,6 +22,14 @@ export const signup = catchAsync(async (req, res, next) => {
     next(errorHandler(400, "All fields are required"));
   }
 
+  const existingUser = await User.findOne({
+    $or: [{ email }, { username }],
+  });
+
+  if (existingUser) {
+    return next(errorHandler(400, "Email or username already exists"));
+  }
+
   const newUser = new User({
     username,
     email,
@@ -38,6 +46,9 @@ export const signin = catchAsync(async (req, res, next) => {
   if (email === "" || password === "") {
     next(errorHandler(400, "All fields are required"));
   }
+
+  console.log(email, password);
+  
 
   const validUser = await User.findOne({ email });
   if (
