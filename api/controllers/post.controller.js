@@ -3,22 +3,32 @@ import { catchAsync } from "../utils/catchAsync.js";
 import { errorHandler } from "../utils/error.js";
 
 export const create = catchAsync(async (req, res, next) => {
-  if (!req.body.title || !req.body.content) {
-    return next(errorHandler(400, "Please provide all required fields"));
-  }
-  const slug = req.body.title
-    .split(" ")
-    .join("-")
-    .toLowerCase()
-    .replace(/[^a-zA-Z0-9-]/g, "");
-  const newPost = new Post({
-    ...req.body,
-    slug,
-    userId: req.user.id,
-  });
+  try {
+    if (!req.body.title || !req.body.content) {
+      return next(errorHandler(400, "Please provide all required fields"));
+    }
+    const slug = req.body.title
+      .split(" ")
+      .join("-")
+      .toLowerCase()
+      .replace(/[^a-zA-Z0-9-]/g, "");
+    const newPost = new Post({
+      ...req.body,
+      slug,
+      userId: req.user.id,
+    });
+    // console.log(newPost);
+    const oldPost = await Post.find({title: newPost.title})
+    console.log(oldPost[0].title);
+    
+    // if(Post.title == newPost)
+    
 
-  const savedPost = await newPost.save();
-  res.status(201).json(savedPost);
+    const savedPost = await newPost.save();
+    res.status(201).json(savedPost);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 export const getposts = catchAsync(async (req, res, next) => {
@@ -40,8 +50,8 @@ export const getposts = catchAsync(async (req, res, next) => {
     }),
   })
     .populate({
-      path: 'userId',
-      select: 'username'
+      path: "userId",
+      select: "username",
     })
     .sort({ updatedAt: sortDirection })
     .skip(startIndex)
@@ -67,7 +77,6 @@ export const getposts = catchAsync(async (req, res, next) => {
     lastMonthPosts,
   });
 });
-
 
 export const deletePost = catchAsync(async (req, res, next) => {
   if (req.user.isAdmin || req.user.id !== req.params.userId) {
