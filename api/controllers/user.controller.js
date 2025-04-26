@@ -59,14 +59,18 @@ export const updateUser = catchAsync(async (req, res, next) => {
 });
 
 export const deleteUser = catchAsync(async (req, res, next) => {
-  if (!req.user.isAdmin && req.user.id !== req.params.userId) {
-    return next(
-      errorHandler(403, "You are not authorized to update this user")
-    );
-  }
+  try {
+    if (!req.user.isAdmin && req.user.id !== req.params.userId) {
+      return next(
+        errorHandler(403, "You are not authorized to update this user")
+      );
+    }
 
-  await User.findByIdAndDelete(req.params.userId);
-  res.status(200).json({ message: "User has been deleted" });
+    await User.findByIdAndDelete(req.params.userId);
+    res.status(200).json({ message: "User has been deleted" });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 export const signout = catchAsync((req, res, next) => {

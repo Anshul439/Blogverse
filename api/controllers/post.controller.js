@@ -3,6 +3,8 @@ import { catchAsync } from "../utils/catchAsync.js";
 import { errorHandler } from "../utils/error.js";
 
 export const create = catchAsync(async (req, res, next) => {
+  // await Post.collection.dropIndex("slug_1");
+
   try {
     if (!req.body.title || !req.body.content) {
       return next(errorHandler(400, "Please provide all required fields"));
@@ -18,11 +20,10 @@ export const create = catchAsync(async (req, res, next) => {
       userId: req.user.id,
     });
     // console.log(newPost);
-    const oldPost = await Post.find({title: newPost.title})
+    const oldPost = await Post.find({ title: newPost.title });
     console.log(oldPost[0].title);
-    
+
     // if(Post.title == newPost)
-    
 
     const savedPost = await newPost.save();
     res.status(201).json(savedPost);
@@ -79,7 +80,10 @@ export const getposts = catchAsync(async (req, res, next) => {
 });
 
 export const deletePost = catchAsync(async (req, res, next) => {
-  if (req.user.isAdmin || req.user.id !== req.params.userId) {
+  console.log(req.user.id);
+  console.log(req.params.userId);
+
+  if (!req.user.isAdmin || req.user.id !== req.params.userId) {
     console.log("error");
 
     return next(errorHandler(403, "You are not allowed to delete this post!"));
