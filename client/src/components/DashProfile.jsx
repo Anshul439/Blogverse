@@ -2,12 +2,7 @@ import { Alert, Button, Modal, ModalBody, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -34,6 +29,8 @@ export default function DashProfile() {
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
   const [updateUserError, setUpdateUserError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [authModalVisible, setAuthModalVisible] = useState(false);
+  const [authPassword, setAuthPassword] = useState("");
 
   const filePickerRef = useRef(null);
   const dispatch = useDispatch();
@@ -53,33 +50,25 @@ export default function DashProfile() {
   }, [imageFile]);
 
   const uploadImage = async () => {
-    setImageFileUploading(true);
-    setImageFileUploadError(null);
     const storage = getStorage(app);
-    const fileName = new Date().getTime() + imageFile.name;
-    const storageRef = ref(storage, fileName);
+    const storageRef = ref(storage, `profileImages/${currentUser._id}`);
     const uploadTask = uploadBytesResumable(storageRef, imageFile);
+
     uploadTask.on(
       "state_changed",
       (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setImageFileUploadProgress(progress.toFixed(0));
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setImageFileUploadProgress(progress);
+        if (progress === 100) {
+          setImageFileUploading(false);
+        }
       },
       (error) => {
-        setImageFileUploadError(
-          "Could not upload image (File must be less than 2MB)"
-        );
-        setImageFileUploadProgress(null);
-        setImageFile(null);
-        setImageFileUrl(null);
-        setImageFileUploading(false);
+        setImageFileUploadError("Image upload failed, please try again.");
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setImageFileUrl(downloadURL);
-          setFormData({ ...formData, profilePicture: downloadURL });
-          setImageFileUploading(false);
+          setFormData((prevData) => ({ ...prevData, profilePicture: downloadURL }));
         });
       }
     );
@@ -89,43 +78,87 @@ export default function DashProfile() {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`/api/auth/signin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: currentUser.email,
+          password: authPassword,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setAuthModalVisible(false);
+        try {
+          dispatch(updateStart());
+          const res = await fetch(`/api/user/update/${currentUser._id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+    
+          const data = await res.json();
+    
+          // Check the response from the server
+          console.log("Update response:", data);
+          
+          if (!res.ok) {
+            dispatch(updateFailure(data.message));
+            setUpdateUserError(data.message);
+          } else {
+            dispatch(updateSuccess(data));
+            setUpdateUserSuccess("User's profile updated successfully");
+            setFormData({});
+          }
+        } catch (error) {
+          dispatch(updateFailure(error.message));
+          setUpdateUserError(error.message);
+        }
+      } else {
+        setUpdateUserError("Authentication failed, please try again.");
+      }
+    } catch (error) {
+      setUpdateUserError("Error authenticating, please try again.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUpdateUserError(null);
     setUpdateUserSuccess(null);
-    if (Object.keys(formData).length === 0) {
+
+    // Check if formData is set correctly
+    console.log("Submitting form data:", formData);
+    
+    // Make sure to send the form data only if there's anything to update
+    if (Object.keys(formData).length === 0 && !imageFile) {
       setUpdateUserError("No changes made");
       return;
     }
+
+    // Handle image upload
     if (imageFileUploading) {
-      setUpdateUserError("Please wait until image is uploaded");
+      setUpdateUserError("Please wait until the image is uploaded");
       return;
     }
-    try {
-      dispatch(updateStart());
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        dispatch(updateFailure(data.message));
-        setUpdateUserError(data.message);
-      } else {
-        dispatch(updateSuccess(data));
-        setUpdateUserSuccess("User's profile updated successfully");
-      }
-    } catch (error) {
-      dispatch(updateFailure(error.message));
-      setUpdateUserError(error.message);
+
+    // Check if any sensitive fields are being updated
+    if (formData.username || formData.email || formData.password) {
+      setAuthModalVisible(true); // Open authentication modal
+      return;
     }
+
+    // If no sensitive fields, proceed with update
   };
 
   const handleDeleteUser = async () => {
-    setShowModal(false);
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
@@ -143,19 +176,7 @@ export default function DashProfile() {
   };
 
   const handleSignOut = async () => {
-    try {
-      const res = await fetch("/api/user/signout", {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      } else {
-        dispatch(signOutSuccess());
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+    dispatch(signOutSuccess());
   };
 
   return (
@@ -170,7 +191,7 @@ export default function DashProfile() {
           hidden
         ></input>
         <div
-          className=" relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
+          className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
           onClick={() => {
             filePickerRef.current.click();
           }}
@@ -189,8 +210,7 @@ export default function DashProfile() {
                   left: 0,
                 },
                 path: {
-                  stroke:
-                    "rgba(62, 152, 199, ${imageFileUploadProgress / 100})",
+                  stroke: `rgba(62, 152, 199, ${imageFileUploadProgress / 100})`,
                 },
               }}
             />
@@ -237,16 +257,16 @@ export default function DashProfile() {
         >
           {loading ? "Loading..." : "Update"}
         </Button>
-        
-          <Link to={"/create-post"}>
-            <Button
-              type="button"
-              gradientDuoTone="purpleToPink"
-              className="w-full"
-            >
-              Create a post
-            </Button>
-          </Link>
+
+        <Link to={"/create-post"}>
+          <Button
+            type="button"
+            gradientDuoTone="purpleToPink"
+            className="w-full"
+          >
+            Create a post
+          </Button>
+        </Link>
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         <span onClick={() => setShowModal(true)} className="cursor-pointer">
@@ -271,12 +291,27 @@ export default function DashProfile() {
           {error}
         </Alert>
       )}
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        popup
-        size="md"
-      >
+      <Modal show={authModalVisible} onClose={() => setAuthModalVisible(false)}>
+        <Modal.Header />
+        <ModalBody>
+          <form onSubmit={handleAuthSubmit}>
+            <h3 className="text-center mb-4">Are you sure? Please enter your current password to continue. </h3>
+            <TextInput
+              type="password"
+              placeholder="Enter your password"
+              onChange={(e) => setAuthPassword(e.target.value)}
+              required
+            />
+            <div className="mt-4">
+              <Button type="submit">Submit</Button>
+              <Button color="gray" onClick={() => setAuthModalVisible(false)}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </ModalBody>
+      </Modal>
+      <Modal show={showModal} onClose={() => setShowModal(false)} popup size="md">
         <Modal.Header />
         <ModalBody>
           <div className="text-center">
